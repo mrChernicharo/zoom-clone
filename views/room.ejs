@@ -18,8 +18,9 @@
     <script src="/socket.io/socket.io.js"></script>
 
     <script>
-        const myname = "<%= Myname %>"
-        const roomId = "<%= roomid %>"
+        const myname = "<%= Myname %>";
+        const roomId = "<%= roomid %>";
+        console.log({ myname, roomId });
     </script>
 </head>
 
@@ -63,7 +64,7 @@
                         <i class="fas fa-user-plus"></i>
                         <span>Invite</span>
                     </div>
-                    <div class="main_controls_button">
+                    <div class="main_controls_button" onclick="console.log('Participants', { myname, roomId })">
                         <i class="fas fa-user-friends"></i>
                         <span>Participants</span>
                     </div>
