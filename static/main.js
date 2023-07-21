@@ -61,10 +61,10 @@ peer.on("call", (call) => {
     { video: true, audio: true }, // Get our stream
     function (stream) {
       call.answer(stream); // Answer the call with our stream
-      const video = document.createElement("video"); // Create a video element
+      const video = document.createElement("video");
       call.on("stream", function (remoteStream) {
-        // Get other user's stream
-        addVideoStream(video, remoteStream, OtherUsername); // And other user's stream to our window
+        // Get other user's stream and stream to our window
+        addVideoStream(video, remoteStream, OtherUsername); //
       });
     },
     function (err) {
@@ -74,12 +74,10 @@ peer.on("call", (call) => {
 });
 
 peer.on("open", (id) => {
-  // When ever user joins every user is given a unique id and its very imposrtant to know their id when communicating
   socket.emit("join-room", { roomId, id, myname });
 });
 
 socket.on("createMessage", (message) => {
-  // THis function appends a message to the chat area when we or ther user sends message
   var ul = document.getElementById("messageadd");
   var li = document.createElement("li");
   li.className = "message";
@@ -111,7 +109,7 @@ const connectToNewUser = (userId, streams, myname) => {
   const video = document.createElement("video");
   call.on("stream", (userVideoStream) => {
     // When other user answers the call they send their steam to this user
-    //       console.log(userVideoStream);
+    console.log({ userId, userVideoStream });
     addVideoStream(video, userVideoStream, myname); // And that stream
   });
   call.on("close", () => {
