@@ -1,15 +1,20 @@
-const express = require("express");
+import express from "express";
+import { Server } from "http";
+import { v4 as uuidv4 } from "uuid";
+import socketIO from "socket.io";
+import url from "url";
+import { ExpressPeerServer } from "peer";
+import path from "path";
+
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+
 const app = express();
-const server = require("http").Server(app);
-const { v4: uuidv4 } = require("uuid");
-const io = require("socket.io")(server);
-const { ExpressPeerServer } = require("peer");
-const url = require("url");
-// Here we are actually defining the peer server we want to host
+const server = Server(app);
+const io = socketIO(server);
+
 const peerServer = ExpressPeerServer(server, {
   debug: true,
 });
-const path = require("path");
 
 app.set("view engine", "ejs");
 app.use("/public", express.static(path.join(__dirname, "static")));
@@ -20,12 +25,10 @@ app.get("/", (req, res) => {
 });
 
 app.get("/join", (req, res) => {
-  // Our intro page redirects us to /join when we host a meeting
   res.redirect(
-    // When we reach /join route we redirect the user to a new unique route with is formed using Uuid
     url.format({
       pathname: `/join/${uuidv4()}`, // Here it returns a string which has the route and the query strings.
-      query: req.query, // For Eg : /join/A_unique_Number?Param=Params. So we basically get redirected to our old_Url/join/id?params
+      query: req.query, // /join/A_unique_Number?Param=Params. -> get redirected to our old_Url/join/id?params
     })
   );
 });
@@ -47,14 +50,16 @@ app.get("/join/:rooms", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  // When a user coonnects to our server
   socket.on("join-room", ({ roomId, id, myname }) => {
     // When the socket a event 'join room' event
     socket.join(roomId);
+
+    console.log(`${myname} joined room: ${roomId}!`);
+
     socket.to(roomId).broadcast.emit("user-connected", { id, myname }); // emit a 'user-connected' event to tell all the other users
 
     socket.on("messagesend", (message) => {
-      console.log(`room${roomId}::${myname} said: ${message}`);
+      console.log(`room: ${roomId}::${myname} said: ${message}`);
       io.to(roomId).emit("createMessage", message);
     });
 
@@ -64,8 +69,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnect", () => {
-      // When a user disconnects or leaves
-      console.log(`room${roomId}::${myname} disconnected!`);
+      console.log(`room: ${roomId}::${myname} disconnected!`);
       socket.to(roomId).broadcast.emit("user-disconnected", id);
     });
   });
@@ -74,5 +78,4 @@ io.on("connection", (socket) => {
 const PORT = process.env.PORT || 3030;
 server.listen(PORT, () => {
   console.log(`server listening at port ${PORT} 🎸`);
-}); // Listen on port 3030.
-// process.env.PORT || 3030 means  use port 3000 unless there exists a preconfigured port
+});
