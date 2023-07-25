@@ -17,8 +17,8 @@ window.onload = () => {
 var peer = new Peer(undefined, {
   // Now with our peer server up an running, let's connect our client peer to the server
   path: "/peerjs",
-  host: "/",
-  port: "3030",
+  host: "https://zoom-clone-pmcu.onrender.com",
+  port: "5050",
 });
 
 let myVideoStream;
@@ -128,7 +128,7 @@ const cancel = () => {
 const copy = async () => {
   // copy our Invitation link when we press the copy button
   const roomid = document.getElementById("roomid").innerText;
-  await navigator.clipboard.writeText("http://localhost:3030/join/" + roomid);
+  await navigator.clipboard.writeText("https://zoom-clone-pmcu.onrender.com:5050/join/" + roomid);
 };
 const invitebox = () => {
   // SHow our model when we click

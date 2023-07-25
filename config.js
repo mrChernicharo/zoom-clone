@@ -10,7 +10,7 @@ const config = {
   },
   prod: {
     MODE: 'prod',
-    HOST: "localhost",
+    HOST: "https://zoom-clone-pmcu.onrender.com",
     PORT: 5050,
     SECRET: process.env.SOME_SECRET_KEY,
   },
